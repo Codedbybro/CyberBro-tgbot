@@ -1,129 +1,42 @@
-# ⚡ CyberBro
+# CyberBro
 
-<p align="center">
-  <b>A personal Telegram utility bot built with Python.</b>
-  <br>
-  Useful tools. Simple interface. No unnecessary noise.
-</p>
+A personal Telegram utility bot built with python-telegram-bot.
 
-<p align="center">
-  PYTHON · TELEGRAM · LINUX · DOCKER · API
-</p>
+## Features
+- Weather lookup through wttr.in
+- Basic calculator
+- Random password generation using Python's secrets module
+- IP/domain information lookup through ipwho.is
+- Reply-keyboard menu
 
----
+## Stack
+- Python 3.10+
+- python-telegram-bot (async API)
+- requests
+- python-dotenv
 
-## 🧠 About
+## Setup
+1. Create a bot with @BotFather and copy its token.
+2. Clone this repository and enter its directory.
+3. Create and activate a virtual environment: python3 -m venv .venv && source .venv/bin/activate
+4. Install dependencies: python -m pip install -r requirements.txt
+5. Create a .env file in the project root with BOT_TOKEN=put_your_bot_token_here
+6. Start the bot: python bot.py
 
-CyberBro is a personal Telegram utility bot created to bring useful tools into one simple interface.
+## Configuration and security
+- BOT_TOKEN is loaded from the environment using python-dotenv.
+- Keep .env out of Git; the repository .gitignore excludes it.
+- If a token is ever committed or shared, revoke it with BotFather and issue a new one.
+- Third-party API calls require network access and may be unavailable or rate-limited.
 
-The project focuses on practical utilities, clean interaction and gradual expansion.
+## Checks
+GitHub Actions compiles the Python source on pushes and pull requests. The workflow does not contact Telegram or require a bot token.
 
-The main idea is simple:
+## Project layout
+- .github/workflows/ci.yml — CI workflow
+- .gitignore — excludes local secrets and generated files
+- bot.py — bot handlers and startup
+- requirements.txt — dependencies
 
-> One bot. Multiple useful tools.
-
----
-
-## ✨ Features
-
-🌤 WEATHER
-Get the current weather for any city.
-
-🧮 CALCULATOR
-Quick calculations directly inside Telegram.
-
-🔐 PASSWORD GENERATOR
-Generate secure random passwords with a customizable length.
-
-🌐 IP / DOMAIN
-Get basic information about an IP address or domain.
-
-🛠 UTILITY CENTER
-A central place for available CyberBro tools.
-
----
-
-## 🧰 TECH STACK
-
-• Python
-• python-telegram-bot
-• Telegram Bot API
-• Requests
-• python-dotenv
-• Linux
-• Docker
-
----
-
-## 📁 PROJECT STRUCTURE
-
-CyberBro/
-│
-├── bot.py
-├── requirements.txt
-├── .env
-├── .gitignore
-└── README.md
-
----
-
-## 🔐 SECURITY
-
-CyberBro keeps sensitive configuration outside the source code.
-
-The Telegram bot token is stored in an environment variable.
-
-.env must never be committed to a public repository.
-
----
-
-## 🗺 ROADMAP
-
-[x] Main menu
-[x] Weather
-[x] Calculator
-[x] Password generator
-[x] IP / Domain information
-[x] Utility center
-
-[ ] Inline menus
-[ ] More developer tools
-[ ] Network utilities
-[ ] Server utilities
-[ ] Database
-[ ] User preferences
-[ ] Statistics
-[ ] Admin tools
-
----
-
-## 📌 PHILOSOPHY
-
-CyberBro is built around a simple principle:
-
-Useful tools should be easy to access.
-
-No unnecessary complexity.
-No overloaded interface.
-Just practical functionality in one place.
-
-The project will continue to evolve as new ideas and tools are added.
-
----
-
-## 👨‍💻 AUTHOR
-
-Codedbybro
-
-Python · Linux · DevOps · Web Development
-
-GitHub:
-https://github.com/Codedbybro
-
----
-
-<p align="center">
-  <b>⚡ CyberBro</b>
-  <br>
-  Useful tools. One place.
-</p>
+## Learning goals
+This project is a practical exercise in asynchronous Telegram handlers, environment-based configuration, HTTP requests, Linux deployment, and basic CI. It is a learning project; review and test the handlers before using it as a public production bot.
