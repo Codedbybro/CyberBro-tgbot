@@ -32,6 +32,9 @@ import re
 import secrets
 import string
 import logging
+import asyncio
+import ast
+import operator
 
 import requests
 
@@ -61,6 +64,45 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(__name__)
+
+
+# Safe arithmetic evaluator: allow a small AST subset instead of eval().
+_CALC_OPERATORS = {
+    ast.Add: operator.add,
+    ast.Sub: operator.sub,
+    ast.Mult: operator.mul,
+    ast.Div: operator.truediv,
+    ast.FloorDiv: operator.floordiv,
+    ast.Mod: operator.mod,
+    ast.UAdd: operator.pos,
+    ast.USub: operator.neg,
+}
+
+
+def safe_calculate(expression: str):
+    if len(expression) > 100:
+        raise ValueError("Expression is too long")
+
+    tree = ast.parse(expression, mode="eval")
+
+    def evaluate(node):
+        if isinstance(node, ast.Expression):
+            return evaluate(node.body)
+        if isinstance(node, ast.Constant) and type(node.value) in (int, float):
+            if abs(node.value) > 10**12:
+                raise ValueError("Number is too large")
+            return node.value
+        if isinstance(node, ast.BinOp) and type(node.op) in _CALC_OPERATORS:
+            return _CALC_OPERATORS[type(node.op)](evaluate(node.left), evaluate(node.right))
+        if isinstance(node, ast.UnaryOp) and type(node.op) in _CALC_OPERATORS:
+            return _CALC_OPERATORS[type(node.op)](evaluate(node.operand))
+        raise ValueError("Unsupported expression")
+
+    result = evaluate(tree)
+    if isinstance(result, (int, float)) and abs(result) > 10**15:
+        raise ValueError("Result is too large")
+    return result
+
 
 
 # ============================================================
@@ -209,10 +251,7 @@ async def weather(
 
     try:
 
-        response = requests.get(
-            url,
-            timeout=10,
-        )
+        response = await asyncio.to_thread(requests.get, url, timeout=10)
 
         response.raise_for_status()
 
@@ -277,13 +316,7 @@ async def calculate(
 
     try:
 
-        result = eval(
-            expression,
-            {
-                "__builtins__": {}
-            },
-            {},
-        )
+        result = safe_calculate(expression)
 
         await update.message.reply_text(
             f"🧮 <b>{expression}</b>\n\n"
@@ -399,11 +432,9 @@ async def ip_info(
 
     try:
 
-        response = requests.get(
-            url,
-            timeout=10,
-        )
+        response = await asyncio.to_thread(requests.get, url, timeout=10)
 
+        response.raise_for_status()
         data = response.json()
 
 
@@ -546,6 +577,8 @@ async def button_handler(
         await tools(update, context)
 
         return
+
+    await unknown(update, context)
 
 
 # ============================================================
